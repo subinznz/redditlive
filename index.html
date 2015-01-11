@@ -1,16 +1,19 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title> - jsFiddle demo</title>
 
-  <title>How to Parse a JSON file using jQuery</title>
 
-  <style>
-  body{
+  <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+
+  <style type='text/css'>
+  body {
     text-align: center;
     font-family: arial;
   }
-
-  .button{
+  .button {
     margin:20px;
     font-size:16px;
     font-weight: bold;
@@ -19,44 +22,60 @@
   </style>
 
 
-</head>
-<body>
-  <a href="data.json" target="_blank">Open JSON file</a><br />
-  <br />
-  <span id="results"></span>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type='text/javascript'>//<![CDATA[
+  $(window).load(function(){
+    (function(){
+      var x = 0;
+      (function poll() {
 
-  <script>
 
-  (function poll() {
-    setTimeout(function () {
+        setTimeout(function () {
+          //start ajax request
+          $.ajax({
+            type: 'GET',
+            url: "http://www.reddit.com/live/u7qtz12ybb74.json",
+            //force to handle it as text
+            dataType: "text",
+            success: function(data) {
 
-      //start ajax request
-      $.ajax({
-        type: 'GET',
-        url: "http://www.reddit.com/live/u7qtz12ybb74.json",
-        //force to handle it as text
-        dataType: "text",
-        success: function(data) {
+              //data downloaded so we call parseJSON function
+              //and pass downloaded data
+              var json = $.parseJSON(data);
+              var timing = parseInt(json.data.children[0].data.created);
+              console.log(x,timing,'test1');
+              if (!(x == timing )) {
+                //now json variable contains data in json format
+                //let's display a few items
+                $('#results').html('Plugin name: ' + json.data.children[0].data.body );
+                var msg = new SpeechSynthesisUtterance(json.data.children[0].data.body);
+                window.speechSynthesis.speak(msg);
+                x = timing;
+                console.log(x,timing,'test2');
+              }
+            },
+            complete: poll
+          });
+        }, 15000);
+      })();
 
-          //data downloaded so we call parseJSON function
-          //and pass downloaded data
-          var json = $.parseJSON(data);
-          //now json variable contains data in json format
-          //let's display a few items
-          $('#results').html('Plugin name: ' + json.data.children[0].data.body );
-          var msg = new SpeechSynthesisUtterance(json.data.children[0].data.body);
-          window.speechSynthesis.speak(msg);
+    })();
+  });//]]>
 
-        },
-        complete: poll
-      });
-    }, 5000);
-  })();
 </script>
 
 
+</head>
+<body>
+  <!doctype html>
+  <body> <a href="data.json" target="_blank">Open JSON file</a>
+
+    <br />
+    <br /> <span id="results"></span>
+
+  </body>
 
 </body>
+
+
 </html>
